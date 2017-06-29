@@ -9,7 +9,7 @@
 	var quizOver = false;
 	var question; 			// chosen question string
 	var questionNum;       // array index of chosen question
-	var number = 21;
+	var number = 20;
 	var t = this // allow to pull in variables
 
 	var questions = [{
@@ -86,7 +86,7 @@
 	}
 	function countdown() {
 		number--;
-		$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
+		// $("#timer").html("<h3> Time Remaining: " + number + "</h3>");
 		if (number === 0) {
 			stop();
 		}
@@ -97,10 +97,10 @@
 
 	function displayQuestion () {
 		if ((userAnswers.correct + userAnswers.incorrect) <= 10) {
-			clearTimeout();
+			$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
+			// clearTimeout();
 			// var number = 21;
-			setTimeout(timesUp, 1000 * 22);
-			timer();
+
 			$("#question").append("<h4>" + question + "</h4>");
 			var choicesArr = questions[questionNum].choices;
 			// var buttonsArr = [];
@@ -108,6 +108,8 @@
 			for (var i = 0; i < choicesArr.length; i++) {
 				$("#answer").append("<div class='button' data-attr=" + i + ">" + choicesArr[i] + "</div><br>");
 			}
+			setTimeout(timesUp, 1000 * 20);
+			timer();
 		} else {
 			quizOver = true;
 			// $("#textbox").append($("<div>", {
@@ -139,7 +141,7 @@
 	function wrongAnswer() {
 		var choicesArr = questions[questionNum].choices;
 		var right = questions[questionNum].correct;
-		$("#textbox").replaceWith("<h2>Wrong Answer</h2><br><h4>The correct answer was " + choicesArr[right] + "</h4>");
+		$("#textbox").replaceWith('<h2>Wrong Answer</h2><br><h4>The correct answer was "' + choicesArr[right] + '"</h4>');
 		wrong.play();
 		setTimeout(displayQuestion(),3000);
 	}
