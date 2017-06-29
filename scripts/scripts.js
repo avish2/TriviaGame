@@ -5,11 +5,12 @@
 	var userAnswers = {
 			correct: 0, 
 			incorrect: 0
-	};							//number of correct or incorrect answers
+		};							//number of correct or incorrect answers
 	var quizOver = false;
 	var question; 			// chosen question string
 	var questionNum;       // array index of chosen question
 	var number = 20;
+	var timerNum;
 	var t = this // allow to pull in variables
 
 	var questions = [{
@@ -23,7 +24,8 @@
 	}, {
 		question: "In episode 2, Walt and Jesse have captured Krazy-8 and locked him up in the basement of Jesse's house, but how did they restrain him?",
 		choices: ["Rope", "Cable / Zip ties", "Bicycle lock", "Chains"],
-		correct: '2'
+		correct: '2',
+		image: "http://38.media.tumblr.com/27c0af9bb619cb05a7c84a5ac56dadb4/tumblr_nedoxk3ZVD1qglx18o4_250.gif"
 	}, {
 		question: "In episode 2, 'Cat's In The Bag...', what item falls through the floor of Jesse's home?",
 		choices: ["Bathtub", "Walt", "Water heater", "Part of the roof"],
@@ -69,31 +71,58 @@
 	// function pickQuestion (questions) {
 		var questionNum = Math.floor(Math.random()*questions.length);
 		var question = questions[questionNum].question;
-		var correctIndx = questions[questionNum].correct
+		var correctIndx = questions[questionNum].correct;
 		console.log(question);
 		console.log(questionNum);
 		console.log(questions[questionNum].choices);
 		console.log(userAnswers);
 		console.log(questions[questionNum].correct);
+		console.log(this);
 		// displayQuestion();
 	// }
-	function timesUp () {
-		$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
-		linger.play();  //plays audio when time's up
-	}
+					// function timesUp () {
+					// 	$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
+					// 	linger.play();  //plays audio when time's up
+					// }
+					// function timer() {
+					// 	timerNum = setInterval(countdown, 1000);
+					// }
+					// function countdown() {
+					// 	number--;
+					// 	// $("#timer").html("<h3> Time Remaining: " + number + "</h3>");
+					// 	if (number === 0) {
+					// 		stop();
+					// 	}
+					// }
+					// function stop() {
+					// 	clearInterval(timerNum);
+					// }
 	function timer() {
-		timerNum = setInterval(countdown, 1000);
-	}
-	function countdown() {
 		number--;
-		// $("#timer").html("<h3> Time Remaining: " + number + "</h3>");
-		if (number === 0) {
-			stop();
+		if (number <=0) {
+			$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
+			linger.play();
+			setTimeout(function() {
+				nextQuestion();
+			}, 3000);
+		} else {
+			$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
 		}
-	}
-	function stop() {
-		clearInterval(timerNum);
-	}
+	};
+	 function nextQuestion() {
+        clearInterval(window.timerNum);
+        number = 20;
+        $('#timer').html("");
+        setTimeout(function() {
+            fresh();
+            displayQuestion();
+        }, 1000)
+    };
+    function fresh() {
+        $('div[id]').each(function(item) {
+            $(this).html('');
+    	});
+    };
 
 	function displayQuestion () {
 		if ((userAnswers.correct + userAnswers.incorrect) <= 10) {
@@ -108,8 +137,8 @@
 			for (var i = 0; i < choicesArr.length; i++) {
 				$("#answer").append("<div class='button' data-attr=" + i + ">" + choicesArr[i] + "</div><br>");
 			}
-			setTimeout(timesUp, 1000 * 20);
-			timer();
+							// setTimeout(timesUp, 1000 * 20);
+							// timer();
 		} else {
 			quizOver = true;
 			// $("#textbox").append($("<div>", {
@@ -123,10 +152,7 @@
 	};
 
 	$(document).on("click", ".button", function() {
-		console.log(correctIndx);
 		var i = $(this).attr("data-attr");
-		console.log(i);
-		// var right = questions[questionNum].correct;
 		if (i == correctIndx) {
 			userAnswers.correct++;
 			rightAnswer(questionNum);
@@ -134,7 +160,7 @@
 			userAnswers.incorrect++;
 			wrongAnswer(questionNum);
 			// alert("WRONG");
-			//displayQuestion(questions);
+			// displayQuestion(questions);
 		}
 	});
 
@@ -143,13 +169,17 @@
 		var right = questions[questionNum].correct;
 		$("#textbox").replaceWith('<h2>Wrong Answer</h2><br><h4>The correct answer was "' + choicesArr[right] + '"</h4>');
 		wrong.play();
-		setTimeout(displayQuestion(),3000);
+		setTimeout(displayQuestion(questions),3000);
 	}
 
 	function rightAnswer() {
-		$("#textbox").replaceWith("<h2>Correct!<h2>");
-		right.play();	
-	}
+		$("#textbox").replaceWith("<h2>Correct!<h2><br><image src=" + questions[questionNum].image + "></image>");
+		right.play();
+		setTimeout(function() {
+			fresh();
+			displayQuestion(questions);
+		}, 3000)	
+	};
 
 	$("#start").click(function() {
 		$(this).hide();
