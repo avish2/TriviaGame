@@ -1,4 +1,5 @@
-// $.fn.game = function () {
+function game() {
+	console.log(this);
 	var wrong = new Audio("audio/dbbs.wav");
 	var right = new Audio("audio/right.wav");
 	var linger = new Audio("audio/linger.mp3");
@@ -90,7 +91,7 @@
 		console.log(userAnswers);
 		console.log(questions[questionNum].correct);
 		console.log(this);
-		// displayQuestion();
+		displayQuestion();
 	// }
 					// function timesUp () {
 					// 	$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
@@ -192,12 +193,12 @@
 			displayQuestion(questions);
 		}, 3000)	
 	};
+};
+var Game;
 
 	$("#start").click(function() {
 		$(this).hide();
 		$(".result").remove();
 		$(".space").html("");
-		// pickQuestion(questions);
-		displayQuestion(questions);
+		game();
 	});
-// }
