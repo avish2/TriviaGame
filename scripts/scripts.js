@@ -5,11 +5,12 @@ function game() {
 	var linger = new Audio("audio/linger.mp3");
 	var userAnswers = {
 			correct: 0, 
-			incorrect: 0
+			incorrect: 0,
+			unanswered: 0
 		};							//number of correct or incorrect answers
 	var quizOver = false;
 	var question; 			// chosen question string
-	var questionNum;       // array index of chosen question
+	var questionNum = 0;       // array index of chosen question
 	var number = 20;
 	var timerNum;
 	var t = this // allow to pull in variables
@@ -82,18 +83,13 @@ function game() {
 	}];
 
 	// function pickQuestion (questions) {
-		var questionNum = Math.floor(Math.random()*questions.length);
-		var question = questions[questionNum].question;
-		var correctIndx = questions[questionNum].correct;
-		console.log(question);
-		console.log(questionNum);
-		console.log(questions[questionNum].choices);
-		console.log(userAnswers);
-		console.log(questions[questionNum].correct);
-		console.log(this);
-		displayQuestion();
+		// var questionNum = Math.floor(Math.random()*questions.length);
+				console.log(this);
+				displayQuestion(questionNum);
+
 	// }
 					// function timesUp () {
+					// userAnswers.unanswered++;	
 					// 	$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
 					// 	linger.play();  //plays audio when time's up
 					// }
@@ -110,88 +106,110 @@ function game() {
 					// function stop() {
 					// 	clearInterval(timerNum);
 					// }
-	function timer() {
-		number--;
-		if (number <=0) {
-			$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
-			linger.play();
-			setTimeout(function() {
-				nextQuestion();
-			}, 3000);
-		} else {
-			$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
-		}
-	};
-	 function nextQuestion() {
-        clearInterval(window.timerNum);
-        number = 20;
-        $('#timer').html("");
-        setTimeout(function() {
+	// function timer() {
+	// 	number--;
+	// 	if (number <=0) {
+	// 		$("#textbox").replaceWith("<h2>Sorry, time's up.</h2>");
+	// 		userAnswers.unanswered++;
+	// 		linger.play();
+	// 		setTimeout(function() {
+	// 			nextQuestion(questionNum);
+	// 		}, 3000);
+	// 	} else {
+	// 		$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
+	// 	}
+	// };
+	 function nextQuestion(questionNum) {
+	 	questionNum++;
+        // clearInterval(window.timerNum);
+        // number = 20;
+        // $('#timer').html("");
+        // setTimeout(function() {
             fresh();
-            displayQuestion();
-        }, 1000)
+            displayQuestion(questionNum);
+        // }, 3000)
     };
     function fresh() {
-        $('div[id]').each(function(item) {
-            $(this).html('');
-    	});
+    	$("#wrapper").empty();
+    	$("#wrapper").append("<div id='textbox'></div>");
+    	$("#textbox").append("<div class= 'space' id='timer'><br></div>");
+    	// $("#textbox").replaceWith("<h2>fresh!</h2>")
+		$("#textbox").append("<div class= 'space' id='question'></div>");
+		$("#textbox").append("<button class='btn btn-success' id='start'>" + "Start" + "</button>");
+		$("#start").hide();
+		$("#textbox").append("<div class='answer space' id='answer'></div>");
+     //    $('div').each(function(item) {
+     //        $(this).html('');
+    	// });
     };
 
-	function displayQuestion () {
-		if ((userAnswers.correct + userAnswers.incorrect) <= 10) {
-			$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
-			// clearTimeout();
-			// var number = 21;
+	function displayQuestion (questionNum) {
 
-			$("#question").append("<h4>" + question + "</h4>");
-			var choicesArr = questions[questionNum].choices;
-			// var buttonsArr = [];
+			if (questionNum <=13) {
+				var question = questions[questionNum].question;
+				var correctIndx = questions[questionNum].correct;
+				console.log(question);
+				console.log(questionNum);
+				console.log(questions[questionNum].choices);
+				console.log(userAnswers);
+				console.log(questions[questionNum].correct);
+				console.log(quizOver);
 
-			for (var i = 0; i < choicesArr.length; i++) {
-				$("#answer").append("<div class='button' data-attr=" + i + ">" + choicesArr[i] + "</div><br>");
+				$("#timer").html("<h3> Time Remaining: " + number + "</h3>");
+				// setInterval(timer(),1000);
+
+				$("#question").append("<h4>" + question + "</h4>");
+				var choicesArr = questions[questionNum].choices;
+				// var buttonsArr = [];
+
+				for (var i = 0; i < choicesArr.length; i++) {
+					$("#answer").append("<div class='button' data-attr=" + i + ">" + choicesArr[i] + "</div><br>");
+				}
+								// setTimeout(timesUp, 1000 * 20);
+								// timer();
+			} else {
+				quizOver = true;
+				$("#textbox").append("<div class='result'>Correct: " + userAnswers.correct + "</div><br>");
+				$("#textbox").append("<div class='result'>Incorrect: " + userAnswers.incorrect + "</div><br>");
+				$("#textbox").append("<div class='result'>Unanswered: " + userAnswers.unanswered + "</div>");
+				// $("#textbox").append($("<div>", {
+				// 	text: "correct: " + userAnswers.correct +
+				// 	text: "incorrect: " + userAnswers.incorrect +
+				// 	text: "unanswered: " + userAnswers.unanswered +
+				// 	class: "result"
+				// }, "</div>"));
+
+				$("#start").text("Restart").appendTo(".space").show();
 			}
-							// setTimeout(timesUp, 1000 * 20);
-							// timer();
-		} else {
-			quizOver = true;
-			// $("#textbox").append($("<div>", {
-			// 	text: "correct: " + t.userAnswers.correct ;
-			// 	text: "incorrect: " + t.userAnswers.incorrect ;
-			// 	class: "result"
-			// }, "</div>"));
-
-			$("#start").text("Restart").appendTo("body").show();
-		}
 	};
 
-	$(document).on("click", ".button", function() {
-		var i = $(this).attr("data-attr");
+	$(document).on("click", ".button", function(questions, questionNum, correctIndx) {
+	// $(".ansbtn").click(function(questions, questionNum) {
+ 		var i = $(this).attr("data-attr");
+		var correctIndx = (questions[questionNum].correct);
 		if (i == correctIndx) {
 			userAnswers.correct++;
 			rightAnswer(questionNum);
 		} else {
 			userAnswers.incorrect++;
 			wrongAnswer(questionNum);
-			// alert("WRONG");
-			// displayQuestion(questions);
 		}
 	});
 
 	function wrongAnswer() {
-		var choicesArr = questions[questionNum].choices;
-		var right = questions[questionNum].correct;
-		$("#textbox").replaceWith('<h2>Wrong Answer</h2><br><h4>The correct answer was "' + choicesArr[right] + '"</h4>');
+		$("#textbox").replaceWith('<h2 id="textbox">Wrong Answer</h2><br><h4>The correct answer was "' + choicesArr[right] + '"</h4>');
 		wrong.play();
-		setTimeout(displayQuestion(questions),3000);
-	}
+		setTimeout(function() {
+			nextQuestion(questionNum);
+		}, 3000)
+	};
 
 	function rightAnswer() {
-		$("#textbox").replaceWith("<h2>Correct!<h2><br><image src='" + questions[questionNum].image + "' height='200' width='300'></image>");
+		$("#textbox").replaceWith("<h2 id='textbox'>Correct!<h2><br><image src='" + questions[questionNum].image + "' height='300' width='450'></image>");
 		right.play();
 		setTimeout(function() {
-			fresh();
-			displayQuestion(questions);
-		}, 3000)	
+			nextQuestion(questionNum);	
+		}, 3000)
 	};
 };
 var Game;
